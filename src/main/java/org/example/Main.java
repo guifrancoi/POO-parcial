@@ -5,7 +5,7 @@ package org.example;
 public class Main {
     public static void main(String[] args) {
 
-    CadastroScreen cadastroScreen = new CadastroScreen();
+    LoginScreen loginScreen = new LoginScreen();
 
     }
 }
