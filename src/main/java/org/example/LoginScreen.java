@@ -3,18 +3,13 @@ package org.example;
 import javax.swing.*;
 import java.awt.*;
 
-public class LoginScreen extends JFrame {
+public class LoginScreen extends JPanel {
 
     private JTextField userField;
     private JPasswordField passField;
 
-    public LoginScreen() {
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(400, 300);
-        setTitle("Login");
-        setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel(new GridBagLayout());
+    public LoginScreen(MainFrame mainFrame) {
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 5, 10, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -27,50 +22,48 @@ public class LoginScreen extends JFrame {
         gbc.gridy = 0;
         JLabel userLabel = new JLabel("Usuário:");
         userLabel.setFont(labelFont);
-        panel.add(userLabel, gbc);
+        add(userLabel, gbc);
 
         gbc.gridy = 1;
         userField = new JTextField(15);
         userField.setFont(fieldFont);
-        panel.add(userField, gbc);
+        add(userField, gbc);
 
         gbc.gridy = 2;
         JLabel passLabel = new JLabel("Senha:");
         passLabel.setFont(labelFont);
-        panel.add(passLabel, gbc);
+        add(passLabel, gbc);
 
         gbc.gridy = 3;
         passField = new JPasswordField(15);
         passField.setFont(fieldFont);
-        panel.add(passField, gbc);
+        add(passField, gbc);
 
+        // Botão de login
         gbc.gridy = 4;
         JButton loginButton = new JButton("Entrar");
         loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        loginButton.addActionListener(e -> login());
-        panel.add(loginButton, gbc);
+        loginButton.addActionListener(e -> login(mainFrame));
+        add(loginButton, gbc);
 
+        // Botão para criar conta
         gbc.gridy = 5;
-        JButton registerButton = new JButton("Cadastrar");
+        JButton registerButton = new JButton("Criar Conta");
         registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.addActionListener(e -> new RegisterScreen()); // Abre a tela de cadastro
-        panel.add(registerButton, gbc);
-
-        add(panel);
-        setVisible(true);
+        registerButton.addActionListener(e -> mainFrame.showScreen("Cadastro")); // Troca para tela de cadastro
+        add(registerButton, gbc);
     }
 
-    private void login() {
+    private void login(MainFrame mainFrame) {
         String username = userField.getText();
         String password = new String(passField.getPassword());
 
         if (UserDatabase.validateUser(username, password)) {
             JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
-            new MainScreen(); // Abre a nova tela
-            dispose(); // Fecha a tela de login
+            new MainScreen();
+            mainFrame.dispose(); // Fecha a janela principal após o login
         } else {
             JOptionPane.showMessageDialog(this, "Usuário ou senha inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 }
