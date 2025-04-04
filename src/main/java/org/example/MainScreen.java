@@ -3,6 +3,7 @@ package org.example;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainScreen extends JFrame {
@@ -12,6 +13,7 @@ public class MainScreen extends JFrame {
     private JLabel totalBalanceLabel;
     private JLabel totalIncomeLabel;
     private JLabel totalExpenseLabel;
+    private List<Transaction> transactions = new ArrayList<>();
 
     public MainScreen() {
         setTitle("Gerenciador Financeiro");
@@ -41,11 +43,14 @@ public class MainScreen extends JFrame {
         JButton editButton = new JButton("Editar");
         JButton deleteButton = new JButton("Excluir");
         JButton filterButton = new JButton("Filtrar");
+        filterButton.addActionListener(e -> {
+            TransactionFilterDialog filterDialog = new TransactionFilterDialog(this); // Aqui this é MainScreen
+            filterDialog.setVisible(true);
+        });
 
         addButton.addActionListener(e -> addTransaction());
         editButton.addActionListener(e -> editTransaction());
         deleteButton.addActionListener(e -> deleteTransaction());
-        filterButton.addActionListener(e -> filterTransactions());
 
         buttonPanel.add(addButton);
         buttonPanel.add(editButton);
@@ -96,10 +101,6 @@ public class MainScreen extends JFrame {
         }
     }
 
-    // Método para filtrar transações (RF002)
-    private void filterTransactions() {
-        JOptionPane.showMessageDialog(this, "Funcionalidade de filtro em desenvolvimento.");
-    }
 
     // Atualizar os valores do resumo financeiro (RF003)
     public void updateSummary() {
@@ -123,8 +124,9 @@ public class MainScreen extends JFrame {
         totalExpenseLabel.setText(String.format("Despesas: R$ %.2f", totalExpense));
     }
 
-    // Adicionar nova transação à tabela
     public void addTransactionToTable(String date, String category, String description, double value, String type) {
+        Transaction transaction = new Transaction(date, category, description, value, type);
+        transactions.add(transaction);
         tableModel.addRow(new Object[]{date, category, description, value, type});
         updateSummary();
     }
@@ -137,6 +139,18 @@ public class MainScreen extends JFrame {
         tableModel.setValueAt(value, rowIndex, 3);
         tableModel.setValueAt(type, rowIndex, 4);
         updateSummary(); // Atualiza o resumo financeiro após a edição
+    }
+
+    public void updateTableWithFilteredTransactions(List<Transaction> filtered) {
+        tableModel.setRowCount(0); // Limpa a tabela
+        for (Transaction t : filtered) {
+            tableModel.addRow(new Object[]{t.getDate(), t.getCategory(), t.getDescription(), t.getValue(), t.getType()});
+        }
+        updateSummary();
+    }
+
+    public List<Transaction> getAllTransactions() {
+        return transactions;
     }
 
 }

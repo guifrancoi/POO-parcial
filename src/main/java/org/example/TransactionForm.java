@@ -24,7 +24,7 @@ public class TransactionForm extends JFrame {
         setLayout(new GridLayout(6, 2));
 
         add(new JLabel("Data:"));
-        dateField = new JTextField(date);
+        dateField = DateFieldFactory.createDateField();
         add(dateField);
 
         add(new JLabel("Categoria:"));
