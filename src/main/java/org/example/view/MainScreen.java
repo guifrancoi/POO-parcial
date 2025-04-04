@@ -1,4 +1,6 @@
-package org.example;
+package org.example.view;
+
+import org.example.model.Transaction;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

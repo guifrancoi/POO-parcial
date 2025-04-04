@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.view.CadastroScreen;
+import org.example.view.LoginScreen;
+
 import javax.swing.*;
 import java.awt.*;
 

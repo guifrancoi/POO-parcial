@@ -1,4 +1,6 @@
-package org.example;
+package org.example.view;
+
+import org.example.util.DateFieldFactory;
 
 import javax.swing.*;
 import java.awt.*;

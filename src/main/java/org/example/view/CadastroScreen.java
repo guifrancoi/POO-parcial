@@ -1,4 +1,7 @@
-package org.example;
+package org.example.view;
+
+import org.example.MainFrame;
+import org.example.database.UserDatabase;
 
 import javax.swing.*;
 import java.awt.*;
