@@ -5,6 +5,7 @@ import org.example.model.Transaction;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,17 +44,47 @@ public class TransactionFilterDialog extends JDialog {
     }
 
     private void applyFilter() {
-        String date = dateField.getText().trim();
-        String category = (String) categoryBox.getSelectedItem();
-        String type = (String) typeBox.getSelectedItem();
+        String data = dateField.getText().trim();
+        String categoria = (String) categoryBox.getSelectedItem();
+        String tipo = (String) typeBox.getSelectedItem();
 
-        List<Transaction> filtered = mainScreen.getAllTransactions().stream()
-                .filter(t -> (date.isEmpty() || t.getDate().equalsIgnoreCase(date)) &&
-                        (category.isEmpty() || t.getCategory().equalsIgnoreCase(category)) &&
-                        (type.isEmpty() || t.getType().equalsIgnoreCase(type)))
-                .collect(Collectors.toList());
+        // Verifica se todos os campos estão vazios ou em branco
+        boolean isDataVazia = data.isEmpty() || data.contains("_");
+        boolean isCategoriaVazia = categoria == null || categoria.isBlank();
+        boolean isTipoVazio = tipo == null || tipo.isBlank();
 
-        mainScreen.updateTableWithFilteredTransactions(filtered);
-        dispose();
+        List<Transaction> todas = mainScreen.getAllTransactions();
+
+        if (isDataVazia && isCategoriaVazia && isTipoVazio) {
+            mainScreen.updateTableWithFilteredTransactions(todas);
+            dispose(); // fecha o dialog
+            return;
+        }
+
+        // Aplica os filtros normalmente
+        List<Transaction> filtradas = new ArrayList<>();
+        for (Transaction t : todas) {
+            boolean corresponde = true;
+
+            if (!isDataVazia && !t.getDate().equals(data)) {
+                corresponde = false;
+            }
+
+            if (!isCategoriaVazia && !t.getCategory().equals(categoria)) {
+                corresponde = false;
+            }
+
+            if (!isTipoVazio && !t.getType().equals(tipo)) {
+                corresponde = false;
+            }
+
+            if (corresponde) {
+                filtradas.add(t);
+            }
+        }
+
+        mainScreen.updateTableWithFilteredTransactions(filtradas);
+        dispose(); // fecha o dialog
     }
+
 }

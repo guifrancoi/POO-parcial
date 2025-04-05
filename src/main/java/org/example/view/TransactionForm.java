@@ -27,6 +27,7 @@ public class TransactionForm extends JFrame {
 
         add(new JLabel("Data:"));
         dateField = DateFieldFactory.createDateField();
+        dateField.setText(date);
         add(dateField);
 
         add(new JLabel("Categoria:"));
@@ -53,11 +54,16 @@ public class TransactionForm extends JFrame {
     }
 
     private void saveTransaction() {
-        String date = dateField.getText();
         String category = (String) categoryComboBox.getSelectedItem();
         String description = descriptionField.getText();
         double value = Double.parseDouble(valueField.getText());
         String type = (String) typeComboBox.getSelectedItem();
+        String date = dateField.getText().trim();
+
+        if (!DateFieldFactory.isValidDate(date)) {
+            JOptionPane.showMessageDialog(this, "Data inválida. Use o formato dd/MM/yyyy e insira uma data real.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         if (editingRow == -1) {
             mainScreen.addTransactionToTable(date, category, description, value, type);
