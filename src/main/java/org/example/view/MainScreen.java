@@ -3,6 +3,7 @@ package org.example.view;
 import org.example.model.Transaction;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
@@ -12,9 +13,9 @@ public class MainScreen extends JFrame {
 
     private JTable transactionTable;
     private DefaultTableModel tableModel;
-    private JLabel totalBalanceLabel;
-    private JLabel totalIncomeLabel;
-    private JLabel totalExpenseLabel;
+    private JLabel saldo;
+    private JLabel totalReceita;
+    private JLabel totalDespesa;
     private List<Transaction> transactions = new ArrayList<>();
 
     public MainScreen() {
@@ -32,12 +33,12 @@ public class MainScreen extends JFrame {
 
         // Painel superior com resumo financeiro
         JPanel summaryPanel = new JPanel(new GridLayout(1, 3));
-        totalBalanceLabel = new JLabel("Saldo: R$ 0,00");
-        totalIncomeLabel = new JLabel("Receitas: R$ 0,00");
-        totalExpenseLabel = new JLabel("Despesas: R$ 0,00");
-        summaryPanel.add(totalBalanceLabel);
-        summaryPanel.add(totalIncomeLabel);
-        summaryPanel.add(totalExpenseLabel);
+        saldo = new JLabel("Saldo: R$ 0,00");
+        totalReceita = new JLabel("Receitas: R$ 0,00");
+        totalDespesa = new JLabel("Despesas: R$ 0,00");
+        summaryPanel.add(saldo);
+        summaryPanel.add(totalReceita);
+        summaryPanel.add(totalDespesa);
 
         // Painel inferior com botões
         JPanel buttonPanel = new JPanel();
@@ -59,10 +60,19 @@ public class MainScreen extends JFrame {
         buttonPanel.add(deleteButton);
         buttonPanel.add(filterButton);
 
-        // Adicionar componentes ao painel principal
-        panel.add(summaryPanel, BorderLayout.NORTH);
+        // Estilização do painel de resumo financeiro com margem
+        summaryPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        // Estilização do painel de botões com margem
+        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
         panel.add(new JScrollPane(transactionTable), BorderLayout.CENTER);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BorderLayout());
+        bottomPanel.add(summaryPanel, BorderLayout.NORTH);
+        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+
 
         add(panel);
         setVisible(true);
@@ -121,9 +131,9 @@ public class MainScreen extends JFrame {
         }
 
         double balance = totalIncome - totalExpense;
-        totalBalanceLabel.setText(String.format("Saldo: R$ %.2f", balance));
-        totalIncomeLabel.setText(String.format("Receitas: R$ %.2f", totalIncome));
-        totalExpenseLabel.setText(String.format("Despesas: R$ %.2f", totalExpense));
+        saldo.setText(String.format("Saldo: R$ %.2f", balance));
+        totalReceita.setText(String.format("Receitas: R$ %.2f", totalIncome));
+        totalDespesa.setText(String.format("Despesas: R$ %.2f", totalExpense));
     }
 
     public void addTransactionToTable(String date, String category, String description, double value, String type) {

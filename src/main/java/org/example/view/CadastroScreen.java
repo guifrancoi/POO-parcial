@@ -1,6 +1,6 @@
 package org.example.view;
 
-import org.example.MainFrame;
+import org.example.NavigationFrame;
 import org.example.database.UserDatabase;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ public class CadastroScreen extends JPanel {
     private JTextField userField;
     private JPasswordField passField;
 
-    public CadastroScreen(MainFrame mainFrame) {
+    public CadastroScreen(NavigationFrame navigationFrame) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 5, 10, 5);
@@ -46,18 +46,18 @@ public class CadastroScreen extends JPanel {
         gbc.gridy = 4;
         JButton registerButton = new JButton("Cadastrar");
         registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.addActionListener(e -> registerUser(mainFrame));
+        registerButton.addActionListener(e -> registerUser(navigationFrame));
         add(registerButton, gbc);
 
         // Botão para voltar ao login
         gbc.gridy = 5;
         JButton backButton = new JButton("Voltar");
         backButton.setFont(new Font("Arial", Font.BOLD, 16));
-        backButton.addActionListener(e -> mainFrame.showScreen("Login")); // Troca para tela de login
+        backButton.addActionListener(e -> navigationFrame.showScreen("Login")); // Troca para tela de login
         add(backButton, gbc);
     }
 
-    private void registerUser(MainFrame mainFrame) {
+    private void registerUser(NavigationFrame navigationFrame) {
         String username = userField.getText();
         String password = new String(passField.getPassword());
 
@@ -68,7 +68,7 @@ public class CadastroScreen extends JPanel {
 
         if (UserDatabase.registerUser(username, password)) {
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!");
-            mainFrame.showScreen("Login"); // Troca para tela de login após cadastro
+            navigationFrame.showScreen("Login"); // Troca para tela de login após cadastro
         } else {
             JOptionPane.showMessageDialog(this, "Já existe um usuário com esse nome", "Erro", JOptionPane.ERROR_MESSAGE);
         }

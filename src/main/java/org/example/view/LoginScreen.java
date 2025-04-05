@@ -1,6 +1,6 @@
 package org.example.view;
 
-import org.example.MainFrame;
+import org.example.NavigationFrame;
 import org.example.database.UserDatabase;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ public class LoginScreen extends JPanel {
     private JTextField userField;
     private JPasswordField passField;
 
-    public LoginScreen(MainFrame mainFrame) {
+    public LoginScreen(NavigationFrame navigationFrame) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 5, 10, 5);
@@ -46,25 +46,25 @@ public class LoginScreen extends JPanel {
         gbc.gridy = 4;
         JButton loginButton = new JButton("Entrar");
         loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        loginButton.addActionListener(e -> login(mainFrame));
+        loginButton.addActionListener(e -> login(navigationFrame));
         add(loginButton, gbc);
 
         // Botão para criar conta
         gbc.gridy = 5;
         JButton registerButton = new JButton("Criar Conta");
         registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.addActionListener(e -> mainFrame.showScreen("Cadastro")); // Troca para tela de cadastro
+        registerButton.addActionListener(e -> navigationFrame.showScreen("Cadastro")); // Troca para tela de cadastro
         add(registerButton, gbc);
     }
 
-    private void login(MainFrame mainFrame) {
+    private void login(NavigationFrame navigationFrame) {
         String username = userField.getText();
         String password = new String(passField.getPassword());
 
         if (UserDatabase.validateUser(username, password)) {
             JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
             new MainScreen();
-            mainFrame.dispose(); // Fecha a janela principal após o login
+            navigationFrame.dispose(); // Fecha a janela principal após o login
         } else {
             JOptionPane.showMessageDialog(this, "Usuário ou senha inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
         }

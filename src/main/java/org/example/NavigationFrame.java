@@ -6,12 +6,12 @@ import org.example.view.LoginScreen;
 import javax.swing.*;
 import java.awt.*;
 
-public class MainFrame extends JFrame {
+public class NavigationFrame extends JFrame {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
-    public MainFrame() {
+    public NavigationFrame() {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 300);
         setTitle("Sistema de Login");
