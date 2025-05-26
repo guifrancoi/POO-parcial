@@ -1,22 +1,23 @@
 package org.example.view;
 
+import org.example.model.dao.TransacaoDAO;
 import org.example.util.DateFieldFactory;
-import org.example.model.Transaction;
+import org.example.model.entity.Transacao;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class TransactionFilterDialog extends JDialog {
+public class TransacaoFilterDialog extends JDialog {
 
     private JTextField dateField;
     private JComboBox<String> categoryBox;
     private JComboBox<String> typeBox;
     private MainScreen mainScreen;
+    private final TransacaoDAO transacaoDAO = new TransacaoDAO();
 
-    public TransactionFilterDialog(MainScreen mainScreen) {
+    public TransacaoFilterDialog(MainScreen mainScreen) {
         this.mainScreen = mainScreen;
 
         setTitle("Filtrar Transações");
@@ -48,33 +49,31 @@ public class TransactionFilterDialog extends JDialog {
         String categoria = (String) categoryBox.getSelectedItem();
         String tipo = (String) typeBox.getSelectedItem();
 
-        // Verifica se todos os campos estão vazios ou em branco
         boolean isDataVazia = data.isEmpty() || data.contains("_");
         boolean isCategoriaVazia = categoria == null || categoria.isBlank();
         boolean isTipoVazio = tipo == null || tipo.isBlank();
 
-        List<Transaction> todas = mainScreen.getAllTransactions();
+        List<Transacao> todas = transacaoDAO.findAll();
 
         if (isDataVazia && isCategoriaVazia && isTipoVazio) {
-            mainScreen.updateTableWithFilteredTransactions(todas);
-            dispose(); // fecha o dialog
+            mainScreen.updateTableWithFilteredTransacoes(todas);
+            dispose();
             return;
         }
 
-        // Aplica os filtros normalmente
-        List<Transaction> filtradas = new ArrayList<>();
-        for (Transaction t : todas) {
+        List<Transacao> filtradas = new ArrayList<>();
+        for (Transacao t : todas) {
             boolean corresponde = true;
 
-            if (!isDataVazia && !t.getDate().equals(data)) {
+            if (!isDataVazia && !t.getData().equals(data)) {
                 corresponde = false;
             }
 
-            if (!isCategoriaVazia && !t.getCategory().equals(categoria)) {
+            if (!isCategoriaVazia && !t.getCategoria().equals(categoria)) {
                 corresponde = false;
             }
 
-            if (!isTipoVazio && !t.getType().equals(tipo)) {
+            if (!isTipoVazio && !t.getTipo().equals(tipo)) {
                 corresponde = false;
             }
 
@@ -83,8 +82,7 @@ public class TransactionFilterDialog extends JDialog {
             }
         }
 
-        mainScreen.updateTableWithFilteredTransactions(filtradas);
-        dispose(); // fecha o dialog
+        mainScreen.updateTableWithFilteredTransacoes(filtradas);
+        dispose();
     }
-
 }

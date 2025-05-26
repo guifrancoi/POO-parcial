@@ -1,12 +1,12 @@
 package org.example.view;
 
-import org.example.model.Transaction;
+import org.example.model.dao.TransacaoDAO;
+import org.example.model.entity.Transacao;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainScreen extends JFrame {
@@ -16,7 +16,7 @@ public class MainScreen extends JFrame {
     private JLabel saldo;
     private JLabel totalReceita;
     private JLabel totalDespesa;
-    private List<Transaction> transactions = new ArrayList<>();
+    private final TransacaoDAO transacaoDAO = new TransacaoDAO();
 
     public MainScreen() {
         setTitle("Gerenciador Financeiro");
@@ -27,7 +27,7 @@ public class MainScreen extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
 
         // Criar modelo da tabela
-        String[] columnNames = {"Data", "Categoria", "Descrição", "Valor", "Tipo"};
+        String[] columnNames = {"ID", "Data", "Categoria", "Descrição", "Valor", "Tipo"};
         tableModel = new DefaultTableModel(columnNames, 0);
         transactionTable = new JTable(tableModel);
 
@@ -47,7 +47,7 @@ public class MainScreen extends JFrame {
         JButton deleteButton = new JButton("Excluir");
         JButton filterButton = new JButton("Filtrar");
         filterButton.addActionListener(e -> {
-            TransactionFilterDialog filterDialog = new TransactionFilterDialog(this); // Aqui this é MainScreen
+            TransacaoFilterDialog filterDialog = new TransacaoFilterDialog(this); // Aqui this é MainScreen
             filterDialog.setVisible(true);
         });
 
@@ -75,12 +75,35 @@ public class MainScreen extends JFrame {
 
 
         add(panel);
+        loadAllTransacoes();
         setVisible(true);
+    }
+
+    public void loadAllTransacoes() {
+        List<Transacao> transacoes = transacaoDAO.findAll();
+        updateTableWithFilteredTransacoes(transacoes);
+    }
+
+    public void addTransactionToTable(String date, String category, String description, double value, String type) {
+        Transacao transacao = new Transacao(date, category, description, value, type);
+        transacaoDAO.save(transacao);
+        loadAllTransacoes(); // Recarrega a tabela com os dados atualizados
+    }
+
+    public void updateTransaction(int rowIndex, String date, String category, String description, double value, String type) {
+        Long id = getIdFromRow(rowIndex); // você precisará manter o ID na tabela, mesmo que oculto
+        Transacao transacao = new Transacao(id, date, category, description, value, type);
+        transacaoDAO.update(transacao);
+        loadAllTransacoes();
+    }
+
+    private Long getIdFromRow(int row) {
+        return (Long) tableModel.getValueAt(row, 0);
     }
 
     // Método para adicionar transações
     private void addTransaction() {
-        TransactionForm form = new TransactionForm(this);
+        TransacaoForm form = new TransacaoForm(this);
         form.setVisible(true);
     }
 
@@ -98,19 +121,16 @@ public class MainScreen extends JFrame {
         double value = (Double) tableModel.getValueAt(selectedRow, 3);
         String type = (String) tableModel.getValueAt(selectedRow, 4);
 
-        TransactionForm form = new TransactionForm(this, selectedRow, date, category, description, value, type);
+        TransacaoForm form = new TransacaoForm(this, selectedRow, date, category, description, value, type);
         form.setVisible(true);
     }
 
     // Método para excluir transações
     private void deleteTransaction() {
         int selectedRow = transactionTable.getSelectedRow();
-        if (selectedRow != -1) {
-            tableModel.removeRow(selectedRow);
-            updateSummary();
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione uma transação para excluir.", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+        Long id = getIdFromRow(selectedRow);
+        transacaoDAO.deleteById(id);
+        loadAllTransacoes();
     }
 
 
@@ -136,33 +156,29 @@ public class MainScreen extends JFrame {
         totalDespesa.setText(String.format("Despesas: R$ %.2f", totalExpense));
     }
 
-    public void addTransactionToTable(String date, String category, String description, double value, String type) {
-        Transaction transaction = new Transaction(date, category, description, value, type);
-        transactions.add(transaction);
-        tableModel.addRow(new Object[]{date, category, description, value, type});
-        updateSummary();
-    }
+//    public void addTransactionToTable(String date, String category, String description, double value, String type) {
+//        Transacao transacao = new Transacao(date, category, description, value, type);
+//        transacaos.add(transacao);
+//        tableModel.addRow(new Object[]{date, category, description, value, type});
+//        updateSummary();
+//    }
 
     // Atualiza uma transação existente na tabela
-    public void updateTransaction(int rowIndex, String date, String category, String description, double value, String type) {
-        tableModel.setValueAt(date, rowIndex, 0);
-        tableModel.setValueAt(category, rowIndex, 1);
-        tableModel.setValueAt(description, rowIndex, 2);
-        tableModel.setValueAt(value, rowIndex, 3);
-        tableModel.setValueAt(type, rowIndex, 4);
-        updateSummary(); // Atualiza o resumo financeiro após a edição
-    }
+//    public void updateTransaction(int rowIndex, String data, String categoria, String descricao, double valor, String tipo) {
+//        tableModel.setValueAt(data, rowIndex, 0);
+//        tableModel.setValueAt(categoria, rowIndex, 1);
+//        tableModel.setValueAt(descricao, rowIndex, 2);
+//        tableModel.setValueAt(valor, rowIndex, 3);
+//        tableModel.setValueAt(tipo, rowIndex, 4);
+//        updateSummary(); // Atualiza o resumo financeiro após a edição
+//    }
 
-    public void updateTableWithFilteredTransactions(List<Transaction> filtered) {
-        tableModel.setRowCount(0); // Limpa a tabela
-        for (Transaction t : filtered) {
-            tableModel.addRow(new Object[]{t.getDate(), t.getCategory(), t.getDescription(), t.getValue(), t.getType()});
+    public void updateTableWithFilteredTransacoes(List<Transacao> transacoes) {
+        tableModel.setRowCount(0);
+        for (Transacao t : transacoes) {
+            tableModel.addRow(new Object[]{t.getId(), t.getData(), t.getCategoria(), t.getDescricao(), t.getValor(), t.getTipo()});
         }
         updateSummary();
-    }
-
-    public List<Transaction> getAllTransactions() {
-        return transactions;
     }
 
 }

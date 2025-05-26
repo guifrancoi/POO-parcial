@@ -5,18 +5,18 @@ import org.example.util.DateFieldFactory;
 import javax.swing.*;
 import java.awt.*;
 
-public class TransactionForm extends JFrame {
+public class TransacaoForm extends JFrame {
 
     private JTextField dateField, descriptionField, valueField;
     private JComboBox<String> categoryComboBox, typeComboBox;
     private MainScreen mainScreen;
     private int editingRow = -1;
 
-    public TransactionForm(MainScreen mainScreen) {
+    public TransacaoForm(MainScreen mainScreen) {
         this(mainScreen, -1, "", "", "", 0.0, "Receita");
     }
 
-    public TransactionForm(MainScreen mainScreen, int editingRow, String date, String category, String description, double value, String type) {
+    public TransacaoForm(MainScreen mainScreen, int editingRow, String date, String category, String description, double value, String type) {
         this.mainScreen = mainScreen;
         this.editingRow = editingRow;
 
