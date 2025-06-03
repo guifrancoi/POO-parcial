@@ -1,6 +1,6 @@
 package org.example.view;
 
-import org.example.model.dao.TransacaoDAO;
+import org.example.model.dao.TransacaoDAOImpl;
 import org.example.util.DateFieldFactory;
 import org.example.model.entity.Transacao;
 
@@ -15,7 +15,7 @@ public class TransacaoFilterDialog extends JDialog {
     private JComboBox<String> categoryBox;
     private JComboBox<String> typeBox;
     private MainScreen mainScreen;
-    private final TransacaoDAO transacaoDAO = new TransacaoDAO();
+    private final TransacaoDAOImpl transacaoDAOImpl = new TransacaoDAOImpl();
 
     public TransacaoFilterDialog(MainScreen mainScreen) {
         this.mainScreen = mainScreen;
@@ -53,7 +53,7 @@ public class TransacaoFilterDialog extends JDialog {
         boolean isCategoriaVazia = categoria == null || categoria.isBlank();
         boolean isTipoVazio = tipo == null || tipo.isBlank();
 
-        List<Transacao> todas = transacaoDAO.findAll();
+        List<Transacao> todas = transacaoDAOImpl.findAll();
 
         if (isDataVazia && isCategoriaVazia && isTipoVazio) {
             mainScreen.updateTableWithFilteredTransacoes(todas);
