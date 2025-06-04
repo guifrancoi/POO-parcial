@@ -7,20 +7,16 @@ import java.util.List;
 
 public interface TransacaoDAO {
 
-    void save(Transacao transacao);
+    void salvar(Transacao transacao);
 
-    void update(Transacao transacao);
+    void atualizarTransacao(Transacao transacao);
 
-    void delete(Transacao transacao);
+    Transacao buscaPorIdEUsuario(Long idTransacao, Long idUsuario);
 
-    List<Transacao> findAll();
+    void excluirPorId(Long id);
 
-    Transacao findById(Long id);
+    List<Transacao> buscaTransacoesPorUsuario(Usuario usuario);
 
-    void deleteById(Long id);
-
-    List<Transacao> findByUsuario(Usuario usuario);
-
-    List<Transacao> buscarPorFiltros(Usuario usuario, String data, String categoria, String tipo);
+    List<Transacao> buscaTransacoesPorFiltro(Usuario usuario, String data, String categoria, String tipo);
 
 }

@@ -1,17 +1,20 @@
 package org.example.view;
 
 import org.example.NavigationFrame;
-import org.example.database.UserDatabase;
+import org.example.controller.CadastroController;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class CadastroScreen extends JPanel {
 
-    private JTextField userField;
-    private JPasswordField passField;
+    private final JTextField userField;
+    private final JPasswordField passField;
+    private final CadastroController cadastroController;
 
     public CadastroScreen(NavigationFrame navigationFrame) {
+        this.cadastroController = new CadastroController();
+
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 5, 10, 5);
@@ -42,35 +45,30 @@ public class CadastroScreen extends JPanel {
         passField.setFont(fieldFont);
         add(passField, gbc);
 
-        // Botão para cadastrar
         gbc.gridy = 4;
         JButton registerButton = new JButton("Cadastrar");
         registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.addActionListener(e -> registerUser(navigationFrame));
+        registerButton.addActionListener(e -> onRegister(navigationFrame));
         add(registerButton, gbc);
 
-        // Botão para voltar ao login
         gbc.gridy = 5;
         JButton backButton = new JButton("Voltar");
         backButton.setFont(new Font("Arial", Font.BOLD, 16));
-        backButton.addActionListener(e -> navigationFrame.showScreen("Login")); // Troca para tela de login
+        backButton.addActionListener(e -> navigationFrame.showScreen("Login"));
         add(backButton, gbc);
     }
 
-    private void registerUser(NavigationFrame navigationFrame) {
+    private void onRegister(NavigationFrame navigationFrame) {
         String username = userField.getText();
         String password = new String(passField.getPassword());
 
-        if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Usuário e senha não podem estar vazios!", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        boolean sucesso = cadastroController.cadastrarUsuario(username, password);
 
-        if (UserDatabase.registerUser(username, password)) {
+        if (sucesso) {
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!");
-            navigationFrame.showScreen("Login"); // Troca para tela de login após cadastro
+            navigationFrame.showScreen("Login");
         } else {
-            JOptionPane.showMessageDialog(this, "Já existe um usuário com esse nome", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao cadastrar. Verifique se o usuário já existe ou se os campos estão vazios.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -9,6 +9,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 
 public class MainScreen extends JFrame {
@@ -96,7 +99,7 @@ public class MainScreen extends JFrame {
     public void updateTableWithTransacoes(List<Transacao> transacoes) {
         tableModel.setRowCount(0);
         for (Transacao t : transacoes) {
-            tableModel.addRow(new Object[]{t.getIdTransacao(), t.getData(), t.getCategoria(), t.getDescricao(), t.getValor(), t.getTipo()});
+            tableModel.addRow(new Object[]{t.getIdTransacao(), t.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), t.getCategoria(), t.getDescricao(), t.getValor(), t.getTipo()});
         }
         updateSummary();
     }
@@ -122,15 +125,4 @@ public class MainScreen extends JFrame {
         JOptionPane.showMessageDialog(this, message, "Erro", JOptionPane.ERROR_MESSAGE);
     }
 
-    public TransacaoForm showAddForm() {
-        TransacaoForm form = new TransacaoForm(this);
-        form.setVisible(true);
-        return form;
-    }
-
-    public TransacaoForm showEditForm(int row, Transacao t) {
-        TransacaoForm form = new TransacaoForm(this, row, t.getData(), t.getCategoria(), t.getDescricao(), t.getValor(), t.getTipo());
-        form.setVisible(true);
-        return form;
-    }
 }

@@ -33,7 +33,7 @@ public class MainScreenController {
 
     private void carregarTransacoes() {
         System.out.println("dentro do carregarTransacoes");
-        List<Transacao> transacoes = transacaoDAO.findByUsuario(usuarioLogado);
+        List<Transacao> transacoes = transacaoDAO.buscaTransacoesPorUsuario(usuarioLogado);
         view.updateTableWithTransacoes(transacoes);
     }
 
@@ -46,7 +46,7 @@ public class MainScreenController {
             System.out.println("Confirmed");
             Transacao transacaoNova = form.getTransacaoFromForm();
             transacaoNova.setUsuario(usuarioLogado);
-            transacaoDAO.save(transacaoNova);
+            transacaoDAO.salvar(transacaoNova);
             carregarTransacoes();
         }
     }
@@ -59,9 +59,9 @@ public class MainScreenController {
         }
 
         Long id = view.getIdFromRow(selectedRow);
-        Transacao transacaoExistente = transacaoDAO.findById(id);
-        if (transacaoExistente == null || !transacaoExistente.getUsuario().equals(usuarioLogado)) {
-            view.showError("Transação não encontrada ou pertence a outro usuário.");
+        Transacao transacaoExistente = transacaoDAO.buscaPorIdEUsuario(id, usuarioLogado.getIdUsuario());
+        if (transacaoExistente == null) {
+            view.showError("Transação não encontrada");
             return;
         }
 
@@ -80,7 +80,7 @@ public class MainScreenController {
             Transacao atualizada = form.getTransacaoFromForm();
             atualizada.setId(id);
             atualizada.setUsuario(usuarioLogado);
-            transacaoDAO.update(atualizada);
+            transacaoDAO.atualizarTransacao(atualizada);
             carregarTransacoes();
         }
     }
@@ -93,13 +93,13 @@ public class MainScreenController {
         }
 
         Long id = view.getIdFromRow(selectedRow);
-        Transacao existente = transacaoDAO.findById(id);
-        if (existente == null || !existente.getUsuario().equals(usuarioLogado)) {
-            view.showError("Transação não encontrada ou pertence a outro usuário.");
+        Transacao transacaoExistente = transacaoDAO.buscaPorIdEUsuario(id, usuarioLogado.getIdUsuario());
+        if (transacaoExistente == null) {
+            view.showError("Transação não encontrada");
             return;
         }
 
-        transacaoDAO.deleteById(id);
+        transacaoDAO.excluirPorId(id);
         carregarTransacoes();
     }
 
@@ -113,7 +113,7 @@ public class MainScreenController {
         String categoria = dialog.getCategoria();
         String tipo = dialog.getTipo();
 
-        List<Transacao> resultados = transacaoDAO.buscarPorFiltros(usuarioLogado, data, categoria, tipo);
+        List<Transacao> resultados = transacaoDAO.buscaTransacoesPorFiltro(usuarioLogado, data, categoria, tipo);
         view.updateTableWithTransacoes(resultados);
     }
 }
