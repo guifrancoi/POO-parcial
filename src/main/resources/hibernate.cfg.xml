@@ -9,12 +9,12 @@
         <property name="hibernate.dialect">org.hibernate.community.dialect.SQLiteDialect</property>
 
         <!-- Hibernate config -->
-        <property name="hibernate.hbm2ddl.auto">update</property> <!-- ou create-drop para testes -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
 
         <!-- Mapeamento das entidades -->
-<!--        <mapping class="org.example.model.User"/>-->
+        <mapping class="org.example.model.entity.Usuario"/>
         <mapping class="org.example.model.entity.Transacao"/>
     </session-factory>
 </hibernate-configuration>

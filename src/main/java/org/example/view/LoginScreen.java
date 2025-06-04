@@ -1,7 +1,9 @@
 package org.example.view;
 
 import org.example.NavigationFrame;
-import org.example.database.UserDatabase;
+import org.example.controller.LoginController;
+import org.example.controller.MainScreenController;
+import org.example.model.entity.Usuario;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +12,7 @@ public class LoginScreen extends JPanel {
 
     private JTextField userField;
     private JPasswordField passField;
+    private final LoginController loginController = new LoginController();
 
     public LoginScreen(NavigationFrame navigationFrame) {
         setLayout(new GridBagLayout());
@@ -42,29 +45,32 @@ public class LoginScreen extends JPanel {
         passField.setFont(fieldFont);
         add(passField, gbc);
 
-        // Botão de login
         gbc.gridy = 4;
         JButton loginButton = new JButton("Entrar");
         loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        loginButton.addActionListener(e -> login(navigationFrame));
+        loginButton.addActionListener(e -> realizarLogin(navigationFrame));
         add(loginButton, gbc);
 
-        // Botão para criar conta
         gbc.gridy = 5;
         JButton registerButton = new JButton("Criar Conta");
         registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.addActionListener(e -> navigationFrame.showScreen("Cadastro")); // Troca para tela de cadastro
+        registerButton.addActionListener(e -> navigationFrame.showScreen("Cadastro"));
         add(registerButton, gbc);
     }
 
-    private void login(NavigationFrame navigationFrame) {
+    private void realizarLogin(NavigationFrame navigationFrame) {
         String username = userField.getText();
-        String password = new String(passField.getPassword());
+        String senha = new String(passField.getPassword());
 
-        if (UserDatabase.validateUser(username, password)) {
+        Usuario usuario = loginController.autenticar(username, senha);
+
+        if (usuario != null) {
             JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
-            new MainScreen();
-            navigationFrame.dispose(); // Fecha a janela principal após o login
+            MainScreen mainScreen = new MainScreen(usuario);
+            new MainScreenController(mainScreen, usuario);
+            mainScreen.setVisible(true);
+            navigationFrame.setVisible(false);
+            navigationFrame.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Usuário ou senha inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
         }

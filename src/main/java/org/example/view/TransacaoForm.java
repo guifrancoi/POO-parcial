@@ -1,34 +1,44 @@
 package org.example.view;
 
-import org.example.util.DateFieldFactory;
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import org.example.model.entity.Transacao;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 
-public class TransacaoForm extends JFrame {
+public class TransacaoForm extends JDialog   {
 
-    private JTextField dateField, descriptionField, valueField;
+    private DatePicker datePicker;
+    private JTextField descriptionField, valueField;
     private JComboBox<String> categoryComboBox, typeComboBox;
-    private MainScreen mainScreen;
-    private int editingRow = -1;
+    private boolean confirmed = false;
+    private Long transacaoId = null;
 
-    public TransacaoForm(MainScreen mainScreen) {
-        this(mainScreen, -1, "", "", "", 0.0, "Receita");
+    public TransacaoForm(JFrame parent) {
+        this(parent, null, null, "", "", 0.0, "Receita");
     }
 
-    public TransacaoForm(MainScreen mainScreen, int editingRow, String date, String category, String description, double value, String type) {
-        this.mainScreen = mainScreen;
-        this.editingRow = editingRow;
+    public TransacaoForm(JFrame parent, int editingRow, LocalDate date, String category, String description, double value, String type) {
+        super(parent, true);
+    }
 
-        setTitle(editingRow == -1 ? "Nova Transação" : "Editar Transação");
+    public TransacaoForm(JFrame parent, Long id, LocalDate date, String category, String description, double value, String type) {
+        super(parent, true);
+        this.transacaoId = id;
+
+        setTitle(id == null ? "Nova Transação" : "Editar Transação");
         setSize(300, 250);
-        setLocationRelativeTo(null);
-        setLayout(new GridLayout(6, 2));
+        setLocationRelativeTo(parent);
+        setLayout(new GridLayout(7, 2));
 
         add(new JLabel("Data:"));
-        dateField = DateFieldFactory.createDateField();
-        dateField.setText(date);
-        add(dateField);
+        DatePickerSettings settings = new DatePickerSettings();
+        settings.setFormatForDatesCommonEra("dd/MM/yyyy");
+        datePicker = new DatePicker(settings);
+        if (date != null) datePicker.setDate(date);
+        add(datePicker);
 
         add(new JLabel("Categoria:"));
         categoryComboBox = new JComboBox<>(new String[]{"Alimentação", "Transporte", "Lazer", "Saúde", "Outros"});
@@ -49,28 +59,45 @@ public class TransacaoForm extends JFrame {
         add(typeComboBox);
 
         JButton saveButton = new JButton("Salvar");
-        saveButton.addActionListener(e -> saveTransaction());
+        saveButton.addActionListener(e -> onSave());
         add(saveButton);
+
+        JButton cancelButton = new JButton("Cancelar");
+        cancelButton.addActionListener(e -> dispose());
+        add(cancelButton);
     }
 
-    private void saveTransaction() {
-        String category = (String) categoryComboBox.getSelectedItem();
-        String description = descriptionField.getText();
-        double value = Double.parseDouble(valueField.getText());
-        String type = (String) typeComboBox.getSelectedItem();
-        String date = dateField.getText().trim();
+    private void onSave() {
+        LocalDate selectedDate = datePicker.getDate();
 
-        if (!DateFieldFactory.isValidDate(date)) {
-            JOptionPane.showMessageDialog(this, "Data inválida. Use o formato dd/MM/yyyy e insira uma data real.", "Erro", JOptionPane.ERROR_MESSAGE);
+        if (selectedDate == null) {
+            JOptionPane.showMessageDialog(this, "Selecione uma data válida.", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if (editingRow == -1) {
-            mainScreen.addTransactionToTable(date, category, description, value, type);
-        } else {
-            mainScreen.updateTransaction(editingRow, date, category, description, value, type);
+        try {
+            Double.parseDouble(valueField.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Valor inválido. Digite um número válido.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
+        confirmed = true;
         dispose();
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public Transacao getTransacaoFromForm() {
+        Transacao transacao = new Transacao();
+        transacao.setId(transacaoId);
+        transacao.setData(datePicker.getDate());
+        transacao.setCategoria((String) categoryComboBox.getSelectedItem());
+        transacao.setDescricao(descriptionField.getText());
+        transacao.setValor(Double.parseDouble(valueField.getText()));
+        transacao.setTipo((String) typeComboBox.getSelectedItem());
+        return transacao;
     }
 }

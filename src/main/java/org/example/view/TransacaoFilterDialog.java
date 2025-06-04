@@ -1,34 +1,31 @@
 package org.example.view;
 
-import org.example.model.dao.TransacaoDAOImpl;
-import org.example.util.DateFieldFactory;
-import org.example.model.entity.Transacao;
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 public class TransacaoFilterDialog extends JDialog {
 
-    private JTextField dateField;
+    private DatePicker datePicker;
     private JComboBox<String> categoryBox;
     private JComboBox<String> typeBox;
-    private MainScreen mainScreen;
-    private final TransacaoDAOImpl transacaoDAOImpl = new TransacaoDAOImpl();
+    private boolean confirmed = false;
 
-    public TransacaoFilterDialog(MainScreen mainScreen) {
-        this.mainScreen = mainScreen;
+    public TransacaoFilterDialog(JFrame parent) {
+        super(parent, "Filtrar Transações", true);
 
-        setTitle("Filtrar Transações");
         setSize(300, 200);
-        setLocationRelativeTo(mainScreen);
-        setModal(true);
+        setLocationRelativeTo(parent);
         setLayout(new GridLayout(5, 2, 5, 5));
 
         add(new JLabel("Data (opcional):"));
-        dateField = DateFieldFactory.createDateField();
-        add(dateField);
+        DatePickerSettings settings = new DatePickerSettings();
+        settings.setFormatForDatesCommonEra("dd/MM/yyyy");
+        datePicker = new DatePicker(settings);
+        add(datePicker);
 
         add(new JLabel("Categoria:"));
         categoryBox = new JComboBox<>(new String[]{"", "Alimentação", "Transporte", "Lazer", "Saúde", "Outros"});
@@ -39,50 +36,34 @@ public class TransacaoFilterDialog extends JDialog {
         add(typeBox);
 
         JButton filterButton = new JButton("Aplicar Filtro");
+        filterButton.addActionListener(e -> {
+            confirmed = true;
+            dispose();
+        });
         add(filterButton);
 
-        filterButton.addActionListener(e -> applyFilter());
+        JButton cancelButton = new JButton("Cancelar");
+        cancelButton.addActionListener(e -> dispose());
+        add(cancelButton);
     }
 
-    private void applyFilter() {
-        String data = dateField.getText().trim();
-        String categoria = (String) categoryBox.getSelectedItem();
-        String tipo = (String) typeBox.getSelectedItem();
+    public boolean isConfirmed() {
+        return confirmed;
+    }
 
-        boolean isDataVazia = data.isEmpty() || data.contains("_");
-        boolean isCategoriaVazia = categoria == null || categoria.isBlank();
-        boolean isTipoVazio = tipo == null || tipo.isBlank();
-
-        List<Transacao> todas = transacaoDAOImpl.findAll();
-
-        if (isDataVazia && isCategoriaVazia && isTipoVazio) {
-            mainScreen.updateTableWithFilteredTransacoes(todas);
-            dispose();
-            return;
+    // Retorna data como String no formato dd/MM/yyyy, ou "" se não houver seleção
+    public String getData() {
+        if (datePicker.getDate() == null) {
+            return "";
         }
+        return datePicker.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
 
-        List<Transacao> filtradas = new ArrayList<>();
-        for (Transacao t : todas) {
-            boolean corresponde = true;
+    public String getCategoria() {
+        return (String) categoryBox.getSelectedItem();
+    }
 
-            if (!isDataVazia && !t.getData().equals(data)) {
-                corresponde = false;
-            }
-
-            if (!isCategoriaVazia && !t.getCategoria().equals(categoria)) {
-                corresponde = false;
-            }
-
-            if (!isTipoVazio && !t.getTipo().equals(tipo)) {
-                corresponde = false;
-            }
-
-            if (corresponde) {
-                filtradas.add(t);
-            }
-        }
-
-        mainScreen.updateTableWithFilteredTransacoes(filtradas);
-        dispose();
+    public String getTipo() {
+        return (String) typeBox.getSelectedItem();
     }
 }
