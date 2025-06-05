@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.controller.LoginController;
+import org.example.controller.CadastroController;
 import org.example.view.CadastroScreen;
 import org.example.view.LoginScreen;
 
@@ -17,13 +19,21 @@ public class NavigationFrame extends JFrame {
         setTitle("Sistema de Login");
         setLocationRelativeTo(null);
 
-        // Criando o CardLayout para trocar as telas
+        // Criando o CardLayout
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Adicionando as telas ao painel principal
-        mainPanel.add(new LoginScreen(this), "Login");
-        mainPanel.add(new CadastroScreen(this), "Cadastro");
+        // Instancia as views primeiro
+        LoginScreen loginScreen = new LoginScreen();
+        CadastroScreen cadastroScreen = new CadastroScreen();
+
+        // Cria os controllers e registra eventos
+        new LoginController(this, loginScreen);
+        new CadastroController(this, cadastroScreen); // supondo que você siga o mesmo padrão para cadastro
+
+        // Adiciona as telas ao painel principal
+        mainPanel.add(loginScreen, "Login");
+        mainPanel.add(cadastroScreen, "Cadastro");
 
         add(mainPanel);
         setVisible(true);
@@ -33,5 +43,4 @@ public class NavigationFrame extends JFrame {
     public void showScreen(String name) {
         cardLayout.show(mainPanel, name);
     }
-
 }

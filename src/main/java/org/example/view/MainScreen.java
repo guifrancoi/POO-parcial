@@ -1,4 +1,3 @@
-// MainScreen.java
 package org.example.view;
 
 import org.example.model.entity.Transacao;
@@ -9,9 +8,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.List;
 
 public class MainScreen extends JFrame {

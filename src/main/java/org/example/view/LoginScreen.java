@@ -1,20 +1,17 @@
 package org.example.view;
 
-import org.example.NavigationFrame;
-import org.example.controller.LoginController;
-import org.example.controller.MainScreenController;
-import org.example.model.entity.Usuario;
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class LoginScreen extends JPanel {
 
     private JTextField userField;
     private JPasswordField passField;
-    private final LoginController loginController = new LoginController();
+    private JButton loginButton;
+    private JButton cadastrarButton;
 
-    public LoginScreen(NavigationFrame navigationFrame) {
+    public LoginScreen() {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 5, 10, 5);
@@ -46,33 +43,37 @@ public class LoginScreen extends JPanel {
         add(passField, gbc);
 
         gbc.gridy = 4;
-        JButton loginButton = new JButton("Entrar");
+        loginButton = new JButton("Entrar");
         loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        loginButton.addActionListener(e -> realizarLogin(navigationFrame));
         add(loginButton, gbc);
 
         gbc.gridy = 5;
-        JButton registerButton = new JButton("Criar Conta");
-        registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.addActionListener(e -> navigationFrame.showScreen("Cadastro"));
-        add(registerButton, gbc);
+        cadastrarButton = new JButton("Criar Conta");
+        cadastrarButton.setFont(new Font("Arial", Font.BOLD, 16));
+        add(cadastrarButton, gbc);
     }
 
-    private void realizarLogin(NavigationFrame navigationFrame) {
-        String username = userField.getText();
-        String senha = new String(passField.getPassword());
+    public String getUsername() {
+        return userField.getText();
+    }
 
-        Usuario usuario = loginController.autenticar(username, senha);
+    public String getPassword() {
+        return new String(passField.getPassword());
+    }
 
-        if (usuario != null) {
-            JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
-            MainScreen mainScreen = new MainScreen(usuario);
-            new MainScreenController(mainScreen, usuario);
-            mainScreen.setVisible(true);
-            navigationFrame.setVisible(false);
-            navigationFrame.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Usuário ou senha inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+    public void addLoginListener(ActionListener listener) {
+        loginButton.addActionListener(listener);
+    }
+
+    public void addCadastrarListener(ActionListener listener) {
+        cadastrarButton.addActionListener(listener);
+    }
+
+    public void showMessage(String msg) {
+        JOptionPane.showMessageDialog(this, msg);
+    }
+
+    public void showError(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Erro", JOptionPane.ERROR_MESSAGE);
     }
 }

@@ -20,10 +20,6 @@ public class TransacaoForm extends JDialog   {
         this(parent, null, null, "", "", 0.0, "Receita");
     }
 
-    public TransacaoForm(JFrame parent, int editingRow, LocalDate date, String category, String description, double value, String type) {
-        super(parent, true);
-    }
-
     public TransacaoForm(JFrame parent, Long id, LocalDate date, String category, String description, double value, String type) {
         super(parent, true);
         this.transacaoId = id;
